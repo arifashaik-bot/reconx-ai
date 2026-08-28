@@ -1,0 +1,16 @@
+Order_Identifier,Sale_Proceeds,Order_Date,Customer_Name,Payment_Channel
+TXN-10001,1250.00,2026-08-01,Acme Corp,Credit Card
+TXN-10002,340.50,2026-08-02,Globex Systems,Debit Card
+TXN-10003,890.00,2026-08-03,Soylent Ltd,UPI
+TXN-10004,2100.00,2026-08-04,Initech LLC,Wire Transfer
+TXN-10005,450.00,2026-08-05,Umbrella Corp,Credit Card
+TXN-10006,780.00,2026-08-06,Wayne Enterprises,Corporate Card
+TXN-10007,150.00,2026-08-07,Stark Industries,Credit Card
+TXN-10008,920.00,2026-08-08,Cyberdyne Systems,PayPal
+TXN-10009,610.00,2026-08-09,Massive Dynamic,Credit Card
+TXN-10010,1850.00,2026-08-10,Hooli Inc,Wire Transfer
+TXN-10011,320.00,2026-08-11,Pied Piper,Debit Card
+TXN-10012,1100.00,2026-08-12,Oscorp Industries,Credit Card
+TXN-10013,490.00,2026-08-13,Dunder Mifflin,Credit Card
+TXN-10014,750.00,2026-08-14,Vandelay Industries,NetBanking
+TXN-10015,2250.00,2026-08-15,Wonka Industries,Wire Transfer

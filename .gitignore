@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.env
+*.db
+*.db-journal
+backend/uploads
+frontend/dist
+.DS_Store
+.cache
+.vite

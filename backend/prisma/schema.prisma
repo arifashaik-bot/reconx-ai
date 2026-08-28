@@ -1,0 +1,217 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ReconciliationRun {
+  id                      String               @id @default(uuid())
+  createdAt               DateTime             @default(now())
+  name                    String
+  status                  String               @default("COMPLETED") // PENDING, PROCESSING, COMPLETED, FAILED
+  isDemo                  Boolean              @default(false)
+  totalCases              Int                  @default(0)
+  matchedCount            Int                  @default(0)
+  likelyMatchCount        Int                  @default(0)
+  amountMismatchCount     Int                  @default(0)
+  missingCount            Int                  @default(0)
+  missingSettlementCount  Int                  @default(0)
+  duplicateCount          Int                  @default(0)
+  partialSettlementCount  Int                  @default(0)
+  timingDiscrepancyCount  Int                  @default(0)
+  reviewRequiredCount     Int                  @default(0)
+  grossMerchantAmount     Float                @default(0.0)
+  grossBankAmount         Float                @default(0.0)
+  grossSettlementAmount   Float                @default(0.0)
+  netSettlementAmount     Float                @default(0.0)
+  totalFees               Float                @default(0.0)
+  totalDifference         Float                @default(0.0)
+  matchRate               Float                @default(0.0)
+  amountTolerance         Float                @default(0.01)
+  dateToleranceDays       Int                  @default(3)
+  sensitivity             String               @default("balanced")
+  summary                 String?
+  
+  fileImports             FileImport[]
+  cases                   ReconciledCase[]
+  exceptions              ExceptionItem[]
+  settlementInsights      SettlementInsight[]
+  auditLogs               AuditLogEntry[]
+
+  @@index([createdAt])
+  @@index([isDemo])
+}
+
+model FileImport {
+  id               String            @id @default(uuid())
+  runId            String
+  sourceType       String            // BANK, MERCHANT, SETTLEMENT
+  fileName         String
+  fileSize         Int
+  fileType         String            // CSV, XLSX, XLS
+  totalRows        Int               @default(0)
+  validRows        Int               @default(0)
+  invalidRows      Int               @default(0)
+  warnings         String?           // JSON array string
+  detectedHeaders  String            // JSON array string
+  columnMappings   String            // JSON object string
+  createdAt        DateTime          @default(now())
+  
+  run              ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  rawRecords       RawRecord[]
+
+  @@index([runId])
+  @@index([sourceType])
+}
+
+model RawRecord {
+  id                   String      @id @default(uuid())
+  fileImportId         String
+  sourceType           String      // BANK, MERCHANT, SETTLEMENT
+  rowNumber            Int
+  rawReference         String?
+  normalizedReference  String?
+  rawAmount            String?
+  normalizedAmount     Float?
+  direction            String?     // CREDIT, DEBIT, UNKNOWN
+  rawDate              String?
+  normalizedDate       DateTime?
+  description          String?
+  customer             String?
+  paymentMethod        String?
+  grossAmount          Float?
+  netAmount            Float?
+  fee                  Float?
+  tax                  Float?
+  runningBalance       Float?
+  rawData              String      // JSON object string of the raw row
+  isValid              Boolean     @default(true)
+  validationError      String?
+  
+  fileImport           FileImport  @relation(fields: [fileImportId], references: [id], onDelete: Cascade)
+
+  @@index([fileImportId])
+  @@index([normalizedReference])
+  @@index([normalizedAmount])
+}
+
+model ReconciledCase {
+  id                  String                   @id @default(uuid())
+  runId               String
+  caseNumber          String
+  primaryReference    String?
+  classification      String                   // MATCHED, LIKELY_MATCH, AMOUNT_MISMATCH, MISSING, MISSING_SETTLEMENT, DUPLICATE, PARTIAL_SETTLEMENT, TIMING_DISCREPANCY, REVIEW_REQUIRED
+  confidenceScore     Float                    @default(0.0)
+  matchingMethod      String                   // EXACT_ID, REFERENCE_AMOUNT, AMOUNT_DATE, FUZZY_REFERENCE, METADATA_COMPOSITE, AMBIGUOUS
+  bankAmount          Float?
+  merchantAmount      Float?
+  settlementAmount    Float?
+  netSettlementAmount Float?
+  feeAmount           Float?
+  financialDifference Float                    @default(0.0)
+  transactionDate     DateTime?
+  settlementDate      DateTime?
+  dateDifferenceDays  Int?
+  customer            String?
+  paymentMethod       String?
+  evidence            String                   // JSON array string
+  explanation         String
+  recommendedAction   String?
+  status              String                   @default("OPEN") // OPEN, RESOLVED, IGNORED, UNDER_INVESTIGATION
+  resolutionNotes     String?
+  resolvedAt          DateTime?
+  createdAt           DateTime                 @default(now())
+
+  run                 ReconciliationRun        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  sourceRecords       ReconciledSourceRecord[]
+  exception           ExceptionItem?
+
+  @@index([runId])
+  @@index([classification])
+  @@index([primaryReference])
+  @@index([status])
+}
+
+model ReconciledSourceRecord {
+  id             String         @id @default(uuid())
+  caseId         String
+  sourceType     String         // BANK, MERCHANT, SETTLEMENT
+  rawRecordId    String?
+  reference      String?
+  amount         Float?
+  date           DateTime?
+  direction      String?
+  rawData        String?        // JSON string
+
+  reconciledCase ReconciledCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@index([sourceType])
+}
+
+model ExceptionItem {
+  id                String            @id @default(uuid())
+  caseId            String            @unique
+  runId             String
+  type              String            // AMOUNT_MISMATCH, MISSING, MISSING_SETTLEMENT, DUPLICATE, PARTIAL_SETTLEMENT, TIMING_DISCREPANCY, REVIEW_REQUIRED
+  severity          String            @default("MEDIUM") // HIGH, MEDIUM, LOW
+  affectedSources   String            // Comma-separated (e.g. "BANK, MERCHANT")
+  difference        Float             @default(0.0)
+  explanation       String
+  recommendedAction String
+  status            String            @default("OPEN") // OPEN, RESOLVED, IGNORED, INVESTIGATING
+  notes             String?
+  resolvedAt        DateTime?
+  createdAt         DateTime          @default(now())
+
+  reconciledCase    ReconciledCase    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([type])
+  @@index([status])
+  @@index([severity])
+}
+
+model SettlementInsight {
+  id                 String            @id @default(uuid())
+  runId              String
+  grossCollections   Float             @default(0.0)
+  netSettlements     Float             @default(0.0)
+  totalFees          Float             @default(0.0)
+  totalRefunds       Float             @default(0.0)
+  totalAdjustments   Float             @default(0.0)
+  pendingSettlements Float             @default(0.0)
+  averageDelayDays   Float             @default(0.0)
+  financialExposure  Float             @default(0.0)
+  delayDistribution  String            @default("[]") // JSON string
+  feeBreakdown       String            @default("[]") // JSON string
+  createdAt          DateTime          @default(now())
+
+  run                ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+}
+
+model AuditLogEntry {
+  id        String             @id @default(uuid())
+  runId     String?
+  action    String             // FILE_UPLOAD, MAPPING_UPDATE, RECON_STARTED, RECON_COMPLETED, EXCEPTION_RESOLVED, EXCEPTION_IGNORED, REPORT_EXPORTED, DEMO_STARTED
+  details   String
+  timestamp DateTime           @default(now())
+
+  run       ReconciliationRun? @relation(fields: [runId], references: [id], onDelete: SetNull)
+
+  @@index([runId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
