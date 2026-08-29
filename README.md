@@ -125,7 +125,6 @@ npx prisma generate
 npx prisma db push
 npm test
 npm run dev
-cd ..
 ```
 
 **Terminal 1 (Frontend - Port 5173):**
