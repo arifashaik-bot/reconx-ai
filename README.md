@@ -144,16 +144,23 @@ Copy `.env.example` and rename the copy to `.env` in the `backend` folder before
 
 ### Database Setup
 ```bash
+**Terminal 1 (Backend - Port 5000):**
 cd backend
 npx prisma generate
 npx prisma db push
-npx tsx src/seed.ts
+npm test
+npm run dev
 cd ..
 
+**Terminal 1 (Backend - Port 5173):**
+cd frontend
+npm install
+npm run build
 npm run dev
 ```
+
 - Frontend: http://localhost:5173
-- Backend: http://localhost:4000
+- Backend: http://localhost:5000
 
 ---
 
