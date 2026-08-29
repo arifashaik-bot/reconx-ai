@@ -1,110 +1,188 @@
-# RECONX AI — Financial Reconciliation Workspace
+# RECONX AI
 
 > **Turn payment chaos into financial clarity.**
 
-RECONX AI is a full-stack, enterprise-grade financial reconciliation application designed to compare three independent financial sources:
-1. **Bank Statement**
-2. **Merchant Ledger**
-3. **Payment Settlement Report**
+AI-powered payment reconciliation, exception detection, and settlement intelligence.
 
-The engine performs deterministic 3-way cross-source matching, classifies transaction integrity, calculates financial variances, surfaces broken exceptions, audits gateway fees, and provides natural-language AI insights directly grounded in a local SQLite database via Prisma ORM.
+RECONX AI is a full-stack fintech platform that automates reconciliation across bank statements, merchant ledgers, and payment settlement reports. It matches transactions, detects discrepancies, explains exceptions, and provides actionable financial insights.
 
 ---
 
-## 🌟 Key Features
+## Problem
 
-### 1. Multi-Level Deterministic Matching Engine
-- **Level 1**: Exact reliable identifier (normalized reference matching).
-- **Level 2**: Strong sub-reference match + exact amount.
-- **Level 3**: Amount + exact transaction date.
-- **Level 4**: Amount + transaction date within configured tolerance ($T \pm n$ days).
-- **Level 5**: Fuzzy reference token similarity (> 75%) + amount.
-- **Level 6**: Composite metadata (matching customer, payment channel, amount).
-- **Conflict Resolution**: Compares confidence scores and flags ambiguities as `REVIEW_REQUIRED`.
+Financial teams often reconcile payment data manually across multiple sources. Differences in transaction IDs, amounts, dates, fees, and settlement timings make the process slow, difficult to scale, and prone to errors.
 
-### 2. 3-Way Cross-Source Grouping
-- Links related records across Bank, Merchant, and Settlement into **ONE unified reconciliation case** with 3-source side-by-side audit breakdowns.
-
-### 3. Dynamic Semantic Column Mapping
-- Automatically identifies references, gross/net amounts, fee deductions, taxes, credits, debits, and dates from diverse naming schemas.
-- Distinguishes and isolates **running bank balance** columns so they are never mistaken for transaction amounts.
-- Parses multi-currency formats (`$`, `₹`, `€`, `£`, `Rs.`), European commas, accounting parentheses `(1,250.00)`, and signed/CR/DR indicators.
-
-### 4. 9 Comprehensive Health Classifications
-- `MATCHED`: Complete 3-way consensus with zero variance.
-- `LIKELY_MATCH`: High-confidence match within acceptable extended window.
-- `AMOUNT_MISMATCH`: Identifiers agree across sources but financial amounts differ.
-- `MISSING`: Unmatched record present only in a single source.
-- `MISSING_SETTLEMENT`: Verified in Bank and Merchant but missing in Payment Gateway settlement.
-- `DUPLICATE`: Multiple identical entries within the same source file.
-- `PARTIAL_SETTLEMENT`: Payout amount is strictly lower without an explicit fee deduction.
-- `TIMING_DISCREPANCY`: Settled outside the configured day tolerance.
-- `REVIEW_REQUIRED`: Ambiguous or competing candidate records.
-
-### 5. Interactive 3D & 2D Node Flow Visualization
-- Three.js / React Three Fiber interactive 3D visualization showing Bank, Merchant, and Settlement nodes flowing through the RECONX AI engine with hover tooltips and real-time ledger metrics.
-- Automatic, graceful 2D canvas/SVG fallback if WebGL is unavailable or reduced-motion is requested.
-
-### 6. Grounded AI Analyst Workspace
-- Natural language query assistant analyzing the active SQLite reconciliation run.
-- Powered by OpenAI API (if configured) or an intelligent deterministic financial AI engine that evaluates real database figures, root causes, and specific transaction references.
-
-### 7. Multi-Format Audit Reports
-- One-click downloads of Reconciliation, Exceptions, and Settlement reports in **CSV**, **Excel XLSX**, and **Executive HTML** formats.
+RECONX AI addresses this by bringing financial data into one workspace and automating transaction matching, exception detection, and reconciliation analysis.
 
 ---
 
-## 🛠️ Tech Stack
+## Solution
 
-- **Backend**: Node.js, Express, TypeScript, Prisma ORM, SQLite.
-- **File Parsing**: `csv-parse`, `xlsx` (SheetJS), `multer`.
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide React, Recharts, Framer Motion, Three.js, React Three Fiber.
-- **Testing**: Jest, `ts-jest` automated unit and integration suite.
+RECONX AI provides an end-to-end reconciliation workflow:
+
+- Upload CSV / XLSX / XLS financial data
+- Automatically map and normalize transaction fields
+- Match transactions across multiple sources
+- Assign confidence scores to reconciliation results
+- Detect mismatches, duplicates, missing and partial settlements
+- Use AI to explain unresolved exceptions
+- Track financial exposure and settlement insights
+- Resolve exceptions and generate reports
+
+The platform combines **rule-based reconciliation for reliable matching** with **AI-assisted analysis for ambiguous cases**.
 
 ---
 
-## 🚀 Quick Start Guide
+## How It Works
+
+```text
+Import
+   ↓
+Column Mapping
+   ↓
+Data Normalization
+   ↓
+Multi-Level Matching
+   ↓
+Confidence Scoring
+   ↓
+Exception Detection
+   ↓
+AI Analysis
+   ↓
+Resolution & Reports
+```
+
+---
+
+### Matching Strategy
+
+1. **Exact Reference Match** — Payment ID, Order ID, Transaction ID, Settlement ID
+2. **Amount + Date Match** — Configurable tolerance
+3. **Fuzzy Reference Match** — Handles minor reference differences
+4. **Metadata Match** — Customer and payment information
+5. **AI Analysis** — Assists with ambiguous exceptions
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, Vite, TypeScript, Tailwind CSS |
+| UI & Animation | Framer Motion, Recharts, Three.js |
+| Backend | Node.js, Express, TypeScript |
+| Database | SQLite, Prisma |
+| Authentication | JWT, bcrypt |
+| File Processing | csv-parse, SheetJS |
+| AI | OpenAI-compatible API + deterministic fallback |
+
+---
+
+## Demo
+
+RECONX AI includes a synthetic demo dataset containing:
+
+- Matched transactions
+- Amount mismatches
+- Missing settlements
+- Duplicate transactions
+- Partial settlements
+- Date and reference mismatches
+
+Demo data is clearly labelled **Demo Data — Synthetic** and does not contain real customer financial data.
+
+### Demo Login
+```text
+Email:    demo@reconx.ai
+Password: demo1234
+```
+### After login:
+```text
+Dashboard → Launch Demo
+```
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[User] --> B[React Frontend]
+    B --> C[Express API]
+
+    C --> D[File Parser]
+    C --> E[Reconciliation Engine]
+    C --> F[AI Service]
+
+    D --> G[Prisma ORM]
+    E --> G
+    F --> G
+
+    G --> H[(SQLite Database)]
+```
+---
+## Run Locally
 
 ### Prerequisites
-- Node.js (v18+)
-- npm (v9+)
 
-### 1. Install & Setup Backend
+- Node.js
+- npm
+
+### Installation
+
+```bash
+git clone https://github.com/arifashaik-bot/reconx-ai.git
+cd reconx-ai
+
+npm install
+npm install --prefix backend
+npm install --prefix frontend
+```
+### Environment Setup
+
+Copy `.env.example` and rename the copy to `.env` in the `backend` folder before running the application.
+
+### Database Setup
 ```bash
 cd backend
-npm install
 npx prisma generate
 npx prisma db push
-npm test # Run automated test suite
-```
+npx tsx src/seed.ts
+cd ..
 
-### 2. Install & Setup Frontend
-```bash
-cd ../frontend
-npm install
-npm run build # Verify build
-```
-
-### 3. Run the Full-Stack Application
-In two separate terminals:
-
-**Terminal 1 (Backend - Port 5000):**
-```bash
-cd backend
 npm run dev
 ```
-
-**Terminal 2 (Frontend - Port 5173):**
-```bash
-cd frontend
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+- Frontend: http://localhost:5173
+- Backend: http://localhost:4000
 
 ---
 
-## 🧪 Testing with Real or Sample Data
+## API
 
-1. **Evaluation Demo Mode**: Click **"Launch Demo Mode"** in the sidebar to generate a synthetic dataset with realistic matches, mismatches, missing settlements, duplicates, and timing discrepancies.
-2. **Real File Upload**: Go to **Reconcile**, drag and drop your own 3 financial files (or the sample files in `/samples/`), inspect the dynamic column mappings, and click **"Run Reconciliation Engine"**.
+| Module | Endpoints |
+| --- | --- |
+| Auth | `/api/auth/*` |
+| Imports | `/api/import/*` |
+| Reconciliation | `/api/reconciliation/*` |
+| Transactions | `/api/transactions/*` |
+| Exceptions | `/api/exceptions/*` |
+| Dashboard | `/api/dashboard/*` |
+| AI | `/api/ai/*` |
+| Settlements | `/api/settlements` |
+| Reports | `/api/reports/*` |
+| Settings | `/api/settings` |
+| Audit | `/api/audit` |
+| Demo | `/api/demo/launch` |
+
+---
+
+## Future Scope
+
+- Direct payment provider API integrations
+- Automated bank integrations
+- ERP and accounting integrations
+- Advanced AI investigation
+- Predictive settlement and exception risk
+- Automated low-risk exception resolution
+- Multi-tenant SaaS architecture
+- PostgreSQL-based high-volume processing
