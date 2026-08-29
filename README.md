@@ -119,16 +119,18 @@ npm install --prefix frontend
 Copy `.env.example` and rename the copy to `.env` in the `backend` folder before running the application.
 
 ### Database Setup
-```bash
 **Terminal 1 (Backend - Port 5000):**
+```bash
 cd backend
 npx prisma generate
 npx prisma db push
 npm test
 npm run dev
 cd ..
+```
 
 **Terminal 1 (Backend - Port 5173):**
+```bash
 cd frontend
 npm install
 npm run build
