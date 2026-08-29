@@ -79,30 +79,6 @@ Resolution & Reports
 
 ---
 
-## Demo
-
-RECONX AI includes a synthetic demo dataset containing:
-
-- Matched transactions
-- Amount mismatches
-- Missing settlements
-- Duplicate transactions
-- Partial settlements
-- Date and reference mismatches
-
-Demo data is clearly labelled **Demo Data — Synthetic** and does not contain real customer financial data.
-
-### Demo Login
-```text
-Email:    demo@reconx.ai
-Password: demo1234
-```
-### After login:
-```text
-Dashboard → Launch Demo
-```
----
-
 ## Architecture
 
 ```mermaid
