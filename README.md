@@ -100,9 +100,10 @@ flowchart TD
 ## Run Locally
 
 ### Prerequisites
-
+```bash
 - Node.js
 - npm
+```
 
 ### Installation
 
@@ -110,9 +111,11 @@ flowchart TD
 git clone https://github.com/arifashaik-bot/reconx-ai.git
 cd reconx-ai
 ```
-### Environment Setup
 
+### Environment Setup
+```bash
 Copy `.env.example` and rename the copy to `.env` in the `backend` folder before running the application.
+```
 
 ### Database Setup
 **Terminal 1 (Backend - Port 5000):**
