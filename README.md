@@ -128,7 +128,7 @@ npm run dev
 cd ..
 ```
 
-**Terminal 1 (Backend - Port 5173):**
+**Terminal 1 (Frontend - Port 5173):**
 ```bash
 cd frontend
 npm install
