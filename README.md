@@ -109,10 +109,6 @@ flowchart TD
 ```bash
 git clone https://github.com/arifashaik-bot/reconx-ai.git
 cd reconx-ai
-
-npm install
-npm install --prefix backend
-npm install --prefix frontend
 ```
 ### Environment Setup
 
